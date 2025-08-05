@@ -48,7 +48,7 @@ export default {
     return {
       isEditing: false,
       editableFields: {},
-      savedLocalCopy: {}, // ✅ Add this to store frontend-only changes
+      savedLocalCopy: {}, 
     }
   },
   computed: {
@@ -221,3 +221,4 @@ export default {
   }
 }
 </style>
+
