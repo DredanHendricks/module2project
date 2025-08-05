@@ -1,8 +1,8 @@
 import { createStore } from 'vuex'
-import employees from './modules/employees'
+import employeeModule from './modules/employees' // ✅ renamed to avoid conflict
 import axios from 'axios'
 
-// Try to load saved employee and token from localStorage
+// Load saved employee and token from localStorage
 const savedUser = localStorage.getItem('currentEmployee')
 const savedToken = localStorage.getItem('token')
 
@@ -22,8 +22,8 @@ export default createStore({
   },
   getters: {
     currentEmployee: state => state.currentEmployee,
-    employees: state => state.employees,
-    allEmployees: (state) => state.employees
+    employees: (state) => state.employees, 
+    allEmployees: (state) => state.employees,
   },
   mutations: {
     setCurrentEmployee(state, employee) {
@@ -42,7 +42,7 @@ export default createStore({
       state.addedEmployee = addedEmployee
     },
     setEmployees(state, employees) {
-      state.employees = employees
+      state.employees = employees 
     },
     setAttendance(state, attendance) {
       state.attendance = attendance
@@ -58,9 +58,6 @@ export default createStore({
     async login({ commit }, { username, password }) {
       try {
         const res = await axios.post('http://localhost:9090/login', { username, password })
-
-        // Your backend sends a single user object (not an array)
-        // So use res.data.user directly (not as an array)
         const user = res.data.user
 
         if (!user) {
@@ -68,7 +65,6 @@ export default createStore({
           return { success: false }
         }
 
-        // Save token and user in localStorage
         localStorage.setItem('token', res.data.token)
         localStorage.setItem('currentEmployee', JSON.stringify(user))
         axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`
@@ -126,7 +122,7 @@ export default createStore({
     async fetchLeaveRequests({ commit }) {
       try {
         const res = await axios.get('http://localhost:9090/leave-requests')
-        commit('setLeaveRequests', res.data.data)  // backend returns { data: [...] }
+        commit('setLeaveRequests', res.data.data)
       } catch (error) {
         return error
       }
@@ -135,7 +131,7 @@ export default createStore({
     async fetchAttendance({ commit }) {
       try {
         const res = await axios.get('http://localhost:9090/attendance')
-        commit('setAttendance', res.data.data)  // backend returns { data: [...] }
+        commit('setAttendance', res.data.data)
       } catch (error) {
         return error
       }
@@ -144,7 +140,6 @@ export default createStore({
     async fetchemployees({ commit }) {
       try {
         const res = await axios.get('http://localhost:9090/employees')
-        // Your backend returns { data: [...] }, so get res.data.data
         commit('setEmployees', res.data.data || res.data)
       } catch (error) {
         console.error('Error fetching employees:', error)
@@ -174,6 +169,6 @@ export default createStore({
     },
   },
   modules: {
-    employees,
+    employeeModule, 
   },
 })
