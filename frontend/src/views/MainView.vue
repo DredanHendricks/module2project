@@ -48,6 +48,7 @@ export default {
     return {
       isEditing: false,
       editableFields: {},
+      savedLocalCopy: {}, // ✅ Add this to store frontend-only changes
     }
   },
   computed: {
@@ -57,15 +58,15 @@ export default {
       return (this.employees || []).find((u) => u.username === current.username) || current
     },
     displayFields() {
-      const emp = this.employee
+      // Show saved local copy if it exists
       return this.isEditing
         ? this.editableFields
-        : {
-            Position: emp.position,
-            Department: emp.department,
-            'Employment History': emp.employmentHistory,
-            contact: emp.contact,
-          }
+        : (Object.keys(this.savedLocalCopy).length > 0 ? this.savedLocalCopy : {
+            Position: this.employee.position,
+            Department: this.employee.department,
+            'Employment History': this.employee.employmentHistory,
+            contact: this.employee.contact,
+          })
     },
     icons() {
       return {
@@ -79,16 +80,17 @@ export default {
   methods: {
     toggleEdit() {
       if (!this.isEditing) {
-        const emp = this.employee
+        // Entering edit mode: fill editable fields
         this.editableFields = {
-          Position: emp.position,
-          Department: emp.department,
-          'Employment History': emp.employmentHistory,
-          contact: emp.contact,
+          Position: this.displayFields.Position,
+          Department: this.displayFields.Department,
+          'Employment History': this.displayFields['Employment History'],
+          contact: this.displayFields.contact,
         }
       } else {
-        // Place your save logic here if needed, e.g. dispatch update to store or API call
-        console.log('Saving updated fields:', this.editableFields)
+        // Saving changes locally (not to backend)
+        this.savedLocalCopy = { ...this.editableFields }
+        console.log('Saved locally:', this.savedLocalCopy)
       }
       this.isEditing = !this.isEditing
     },
@@ -98,6 +100,7 @@ export default {
   },
 }
 </script>
+
 
 <style scoped>
 .section {
